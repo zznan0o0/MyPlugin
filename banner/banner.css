@@ -1,0 +1,48 @@
+﻿/*banner*/
+.banner{
+    height:408px; width:100%;
+    overflow:hidden;
+    position:relative;
+}
+
+.banner_img{
+    position: relative;
+    height:100%;
+    list-style:none;
+}
+.banner_img li{
+    position: absolute; top:0; left:0;
+    height:100%; width: 100%;
+}
+.banner_img li>a{
+    position:relative;
+    display:inline-block;
+    height:100%; width: 100%;
+    background:center center no-repeat;
+}
+.banner_btn{
+    position: absolute; z-index: 100;
+    left:50%; bottom: 30px;
+    list-style:none;
+}
+.banner_btn li{
+    position:relative;
+    float: left;
+    width: 44px; height: 10px;
+    opacity:0.4;-moz-opacity:0.4;-o-opacity:0.4;filter:alpha(opacity=40);
+    margin:8px;
+    cursor:pointer;
+}
+
+.banner_btn li:before{
+    content:'';
+    display:inline-block;
+    position:absolute; left:8px; top:8px; z-index:99999;
+    width:40px; height:6px;
+    background:#fff;
+    border-radius: 6px;
+}
+
+.banner_btn li.on{
+   opacity:1;-moz-opacity:1;-o-opacity:1;filter:alpha(opacity=100);
+}
