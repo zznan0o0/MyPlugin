@@ -226,3 +226,7 @@ Banner.prototype = {
     }, 16)
   }
 }
+
+window.addEventListener('load', function(){
+  new Banner();
+})
