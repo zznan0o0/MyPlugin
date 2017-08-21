@@ -15,7 +15,9 @@ var Banner = function(){
     currentIndex: 0,
     toDistant: 0,
     traDistant: 0,
-    currentOpacity: 1
+    currentOpacity: 1,
+    startTime: null,
+    touchSpeed: null
   };
 
   this.init();
@@ -86,7 +88,7 @@ Banner.prototype = {
   },
 
   changeAlpha: function(currentIndex, value, isTouch){
-    if(Math.abs(this.props.distant) < this.props.WIDTH / 3){
+    if(Math.abs(this.props.distant) < this.props.WIDTH / 3 && this.props.touchSpeed < 300){
       this.props.opacity = 1;
       this.bannerImgItem[currentIndex].style.opacity = 1;
       return;
@@ -95,8 +97,9 @@ Banner.prototype = {
       this.props.opacity = 1 - value;
       this.bannerImgItem[currentIndex].style.opacity = this.props.opacity;
     }
-    if(Math.abs(this.props.distant) > this.props.WIDTH / 3 && !isTouch){
+    if(Math.abs(this.props.distant) > this.props.WIDTH / 3 && !isTouch || this.props.touchSpeed > 300 && !isTouch){
       this.props.opacity -= value;
+      if(this.props.opacity < 0.1) this.props.opacity = 0;
       this.bannerImgItem[currentIndex].style.opacity = this.props.opacity;
     }
   },
@@ -113,6 +116,7 @@ Banner.prototype = {
     this.bannerImg.addEventListener('touchstart', function(e){
       e.preventDefault();
       if(!_this.props.isAnimate){
+        _this.props.startTime = new Date();
         _this.props.isStart = true;
         _this.props.startX = e.changedTouches[0].clientX;
       }
@@ -125,7 +129,7 @@ Banner.prototype = {
         var x = e.changedTouches[0].clientX;
         _this.props.distant = _this.props.startX - x;
 
-        _this.changeAlpha(_this.props.currentIndex, Math.abs(_this.props.distant) / 500, true);
+        //_this.changeAlpha(_this.props.currentIndex, Math.abs(_this.props.distant) / 500, true);
         if(Math.abs(_this.props.distant) > _this.props.WIDTH){
           _this.props.distant = _this.props.distant > 0 ? _this.props.WIDTH : -_this.props.WIDTH;
         }
@@ -155,10 +159,13 @@ Banner.prototype = {
       e.preventDefault();
       if(_this.props.isStart && _this.props.isMove && !_this.props.isAnimate){
         _this.props.isAnimate = true;
+
+        _this.props.touchSpeed = Math.abs(_this.props.distant) / Math.abs(_this.props.startTime - new Date()) * 1000;
+
         //_this.animate(_this, 0)
         //-1
         if(_this.props.distant > 0){
-          if(Math.abs(_this.props.distant) > _this.props.WIDTH / 3){
+          if(Math.abs(_this.props.distant) > _this.props.WIDTH / 3 || _this.props.touchSpeed > 300){
             var index = _this.props.length - 1;
             if(_this.props.index === index - 1 && _this.props.currentIndex === index){
               _this.animate(_this, index, function(){
@@ -194,7 +201,7 @@ Banner.prototype = {
           }
         }
         else{
-          if(Math.abs(_this.props.distant) > _this.props.WIDTH / 3){
+          if(Math.abs(_this.props.distant) > _this.props.WIDTH / 3 || _this.props.touchSpeed > 300){
             if(_this.props.index === 1 && _this.props.currentIndex === 0){
               _this.animate(_this, 0, function(){
                 var index = _this.props.length - 1;
@@ -239,7 +246,7 @@ Banner.prototype = {
       var speed = _this.props.toDistant /10;
       speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed);
       _this.props.toDistant -= speed;
-      _this.changeAlpha(_this.props.currentIndex, Math.abs(speed) / 300);
+      //_this.changeAlpha(_this.props.currentIndex, Math.abs(speed) / 300);
       var now = _this.getTranslate3d(_this.bannerImg.style.transform);
       _this.bannerImg.style.transform = 'translate3d(' + (now + speed) + 'px, 0px, 0px)';
 
@@ -247,6 +254,7 @@ Banner.prototype = {
         _this.props.isAnimate = false;
         _this.props.isMove = false;
         _this.props.isStart = false;
+        _this.props.touchSpeed = 0;
         clearInterval(_this.props.timer);
         _this.resetAlpha();
         fn && fn();
